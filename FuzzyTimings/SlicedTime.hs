@@ -8,7 +8,7 @@ module FuzzyTimings.SlicedTime (SlicedTime,
                            slicedTimeBoundaries,
                            cutSlicedTime,
                            mapSlicedTime) where
-import Timings.TimeSlice
+import FuzzyTimings.TimeSlice
 import Data.Maybe
 import Control.Monad
 import Data.Time.LocalTime

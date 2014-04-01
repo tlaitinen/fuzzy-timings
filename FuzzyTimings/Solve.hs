@@ -1,10 +1,10 @@
 module FuzzyTimings.Solve (solveTimingBuckets) where
 
-import Timings.TimingBuckets
-import Timings.SlicedTime
-import Timings.TimeSlice
-import Timings.FuzzyTiming
-import Timings.AccTiming
+import FuzzyTimings.TimingBuckets
+import FuzzyTimings.SlicedTime
+import FuzzyTimings.TimeSlice
+import FuzzyTimings.FuzzyTiming
+import FuzzyTimings.AccTiming
 import Control.Monad.LPMonad
 import Control.Monad
 import Data.LinearProgram

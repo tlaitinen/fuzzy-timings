@@ -3,10 +3,10 @@ module FuzzyTimings.TimingBuckets (FuzzyCountMap,
                               splitToTimingBuckets)
                              where
 
-import Timings.SlicedTime
-import Timings.TimeSlice
-import Timings.FuzzyTiming
-import Timings.AccTiming
+import FuzzyTimings.SlicedTime
+import FuzzyTimings.TimeSlice
+import FuzzyTimings.FuzzyTiming
+import FuzzyTimings.AccTiming
 import Data.Time.LocalTime
 import Data.Maybe
 import Data.List

@@ -3,9 +3,9 @@ module FuzzyTimings.WeeklySlicedTime (WeeklySlicedTime,
                            toTimeOfDaySlices,
                            flattenWeeklySlicedTime,
                            implementWeeklySlicedTime) where
-import Timings.TimeSlice
-import Timings.TimeOfDaySlice
-import Timings.SlicedTime
+import FuzzyTimings.TimeSlice
+import FuzzyTimings.TimeOfDaySlice
+import FuzzyTimings.SlicedTime
 import Data.Time.Calendar.WeekDate (toWeekDate)
 import Data.Time.Calendar
 import Data.Maybe

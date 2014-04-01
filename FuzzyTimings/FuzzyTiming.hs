@@ -3,11 +3,12 @@ module FuzzyTimings.FuzzyTiming (FuzzyTiming(..),
                             cropFuzzyTiming,
                             TimesToPlay) where
 
-import Timings.SlicedTime
-import Timings.TimeSlice
+import FuzzyTimings.SlicedTime
+import FuzzyTimings.TimeSlice
 
 type TimesToPlay = Double
 
+-- | "Fuzzily" timed object that is to be scheduled a number of times within a period of time. 
 data FuzzyTiming k = FuzzyTiming {
     ftId         :: k,
     ftPlayTimes  :: SlicedTime TimesToPlay,

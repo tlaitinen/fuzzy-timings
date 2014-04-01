@@ -1,9 +1,9 @@
 module FuzzyTimings.Schedule (scheduleTimings) where
-import Timings.TimingBuckets
-import Timings.TimeSlice
-import Timings.SlicedTime
-import Timings.AccTiming
-import Timings.FuzzyTiming
+import FuzzyTimings.TimingBuckets
+import FuzzyTimings.TimeSlice
+import FuzzyTimings.SlicedTime
+import FuzzyTimings.AccTiming
+import FuzzyTimings.FuzzyTiming
 import qualified Data.Map as Map
 import System.Random
 import Data.List

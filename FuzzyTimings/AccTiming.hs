@@ -2,6 +2,7 @@ module FuzzyTimings.AccTiming where
 
 import Data.Time.LocalTime
 
+-- | Accurately timed object with duration
 data AccTiming k = AccTiming {
     atId         :: k,
     atTime       :: LocalTime,
