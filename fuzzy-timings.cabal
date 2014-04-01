@@ -1,4 +1,4 @@
-name:   fuzzy-timings-scheduler
+name:   fuzzy-timings
 version: 0.0.1
 license:    MIT
 license-file: LICENSE
@@ -13,7 +13,7 @@ category:    Scheduling
 stability:   Experimental
 cabal-version: >= 1.6
 build-type:  Simple
-homepage:    https://github.com/tlaitinen/fuzzy-timings-scheduler
+homepage:    https://github.com/tlaitinen/fuzzy-timings
 
 library
     build-depends:  base >= 4.3     && < 5
@@ -32,4 +32,4 @@ library
 
 source-repository head
     type: git
-    location: https://github.com/tlaitinen/fuzzy-timings-scheduler
+    location: https://github.com/tlaitinen/fuzzy-timings
