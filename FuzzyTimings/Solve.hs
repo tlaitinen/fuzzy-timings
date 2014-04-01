@@ -1,3 +1,6 @@
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE FlexibleContexts #-}
 module FuzzyTimings.Solve (solveTimingBuckets) where
 
 import FuzzyTimings.TimingBuckets
@@ -7,7 +10,9 @@ import FuzzyTimings.FuzzyTiming
 import FuzzyTimings.AccTiming
 import Control.Monad.LPMonad
 import Control.Monad
+import Control.Monad.State
 import Data.LinearProgram
+
 import qualified Data.Map as Map
 
 -- tVar corresponds to the combined play counts for a single fuzzy timing
@@ -29,6 +34,13 @@ sVar i = "s" ++ (show i)
 objFun :: (Show k, Ord k) => [FuzzyTiming k] -> LinFunc String Int
 objFun fuzzies = linCombination $ [(ftDuration f, tVar f) | f <- fuzzies ]
 
+setBounds :: forall (m :: * -> *) v c.
+            (Ord c, Ord v, MonadState (LP v c) m) =>
+            v -> c -> c -> m ()
+setBounds v l u 
+    | l == u = varEq v l
+    | otherwise = varBds v l u
+    
 timingBucketsLp :: (Show k, Ord k) => SlicedTime (FuzzyCountMap k) -> LP String Int
 timingBucketsLp st = execLPM $ do
     setDirection Max
@@ -37,7 +49,7 @@ timingBucketsLp st = execLPM $ do
         setVarKind (tVar f) IntVar
         -- the total play count must be smaller than equal to the
         -- desired play count
-        varBds (tVar f) 0 (ceiling c)
+        setBounds (tVar f) 0 (ceiling c)
         -- the total play count consists of play counts in individual buckets
         equal (var (tVar f)) $ varSum [ bfVar (i,f') | (i,ts) <- nSlices,
                                            (f',c') <- Map.assocs $ tsValue ts,
@@ -48,12 +60,12 @@ timingBucketsLp st = execLPM $ do
         equal (var (sVar i)) $ linCombination [ (ftDuration f, bfVar (i,f))
                                               | f <- Map.keys $ tsValue ts  ]
         -- only 75% of the seconds can be used to play spots
-        varBds (sVar i) 0 (floor $ (0.75::Double) * (fromIntegral $ tsDuration ts))
+        setBounds (sVar i) 0 (floor $ (0.75::Double) * (fromIntegral $ tsDuration ts))
         forM_ (Map.assocs $ tsValue ts) (\(f,c) -> do
             setVarKind (bfVar (i,f)) IntVar
             -- allow to play one additional time in case of fractional amounts
             -- in a single bucket 
-            varBds (bfVar (i,f)) 0 (ceiling c)
+            setBounds (bfVar (i,f)) 0 (ceiling c)
             ))       
     where
         slices = toTimeSlices st
