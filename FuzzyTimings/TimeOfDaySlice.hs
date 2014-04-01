@@ -27,7 +27,7 @@ mkTimeOfDaySlice :: TimeOfDay -> Int -> a -> TimeOfDaySlice a
 mkTimeOfDaySlice start duration value  = TimeOfDaySlice {
         todsStart = start,
         todsEnd   = dayFractionToTimeOfDay $ 
-                        timeOfDayToDayFraction start + fromIntegral duration,
+                        timeOfDayToDayFraction start + (fromIntegral duration / 86400),
         todsValue = value
     }
 

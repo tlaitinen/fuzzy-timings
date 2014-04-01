@@ -74,9 +74,12 @@ solveTimingBuckets :: (Show k, Ord k) => SlicedTime (FuzzyCountMap k) -> IO (May
 solveTimingBuckets st = do
     let lp = timingBucketsLp st
     print $ lp
-    (_, mresult) <- glpSolveVars mipDefaults lp
-    print mresult
-    let res =  (mresult >>= \(_,vm) -> return $ updateTimingBuckets st vm)
-    print res
-    return res
+    if null (constraints lp) 
+        then return Nothing
+        else do
+            (_, mresult) <- glpSolveVars mipDefaults lp
+            print mresult
+            let res =  (mresult >>= \(_,vm) -> return $ updateTimingBuckets st vm)
+            print res
+            return res
 
