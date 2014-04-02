@@ -23,7 +23,7 @@ addToBucketGoal :: Ord k => FuzzyCountMap k -> FuzzyCountMap k -> FuzzyCountMap 
 addToBucketGoal = Map.unionWith (+)
 
 emptyBuckets :: [LocalTime] -> TimingBuckets k
-emptyBuckets lts = fromBoundaries (nub lts) emptyBucket
+emptyBuckets lts = fromBoundaries lts emptyBucket
 
 cropBuckets :: (Ord k) => TimingBuckets k -> SlicedTime b -> TimingBuckets k
 cropBuckets tb st = deleteSlicedTime tb st
@@ -47,7 +47,7 @@ splitToTimingBuckets fts ats = let
     reserved = fromTimeSlices $ [ mkTimeSlice (atTime at) (atDuration at) ()
                                   | at <- ats ]
     in foldl (\tb ft -> splitToBuckets tb ft) 
-             (cropBuckets (emptyBuckets boundaries)
+             (cropBuckets (emptyBuckets $ nub $ sort $ boundaries)
                           reserved)
              fts
 
