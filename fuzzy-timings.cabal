@@ -50,7 +50,7 @@ Test-suite tests
                   , test-framework-quickcheck2 >= 0.2.9
                   , test-framework-hunit >= 0.3.0
                   , HUnit >= 1.2.5
-                  , QuickCheck >= 2.4.0 && <= 2.5.1.1
+                  , QuickCheck >= 2.4.0 
                   , containers >= 0.4.0
                   , time >= 1.4
                   , fuzzy-timings

@@ -34,16 +34,53 @@ flattenWeeklySlicedTime wst = WeeklySlicedTime {
         wstSlices = Map.map (flatten . sort) (wstSlices wst)
     }
     where
-        flatten (t1:t2:tss) 
-            | todsOverlaps t1 t2 = t1 { todsEnd = todsStart t2 } : flatten (t2:tss)
+        flatten (t1:t2:tss)
+            --          |----|
+            --            |----|
+            | todsStart t1 < todsStart t2 && todsStart t2 < todsEnd t1
+                                      && todsEnd t2 > todsEnd t1 =
+                    if todsPriority t1 > todsPriority t2
+                        then t1 : flatten (t2 { todsStart = todsEnd t1 } : tss)
+                        else (t1 { todsEnd = todsStart t2 }) : flatten (t2:tss)
+            --          |----|
+            --            |--|                
+            | todsStart t1 < todsStart t2 && todsEnd t1 == todsEnd t2 =
+                    if todsPriority t1 > todsPriority t2
+                        then flatten (t1:tss)
+                        else flatten ((t1 { todsEnd = todsStart t2 }) : t2:tss)
+            --          |----|
+            --           |--|
+            | todsStart t1 < todsStart t2 && todsEnd t2 < todsEnd t1 =
+                    if todsPriority t1 > todsPriority t2
+                        then flatten (t1:tss)
+                        else flatten $ (t1 { todsEnd = todsStart t2})
+                                      : (t2:(t1 { todsStart=todsEnd t2 }):tss)
+            --          |----|
+            --          |-------|                    
+            | todsStart t1 == todsStart t2 && todsEnd t2 > todsEnd t1 =
+                    if todsPriority t1 > todsPriority t2
+                        then flatten (t1:t2 { todsStart = todsEnd t1 } : tss)
+                        else flatten (t2:tss)
+            --          |----|
+            --          |----|
+            | todsStart t1 == todsStart t2 && todsEnd t1 == todsEnd t2 =
+                    if todsPriority t1 > todsPriority t2
+                        then flatten (t1:tss)
+                        else flatten (t2:tss)
+            --          |----|
+            --          |---|
+            | todsStart t1 == todsStart t2 && todsEnd t1 > todsEnd t2 =
+                    if todsPriority t1 > todsPriority t2
+                        then flatten (t1:tss)
+                        else flatten (t2:(t1 { todsStart = todsEnd t2 }):tss)
             | otherwise = t1 : flatten (t2:tss)
         flatten tss = tss
-
 implementWeeklySlicedTime :: WeeklySlicedTime a -> Day -> Day -> SlicedTime a
 implementWeeklySlicedTime wst d1 d2 = fromTimeSlices slices
     where   
         slices = [ TimeSlice (LocalTime d (todsStart tods))
                              (LocalTime d (todsEnd tods))
+                             (todsPriority tods)
                              (todsValue tods)
                    | d <- days, tods <- Map.findWithDefault [] (weekDay d) 
                                                             (wstSlices wst) ]

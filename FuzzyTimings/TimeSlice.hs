@@ -1,6 +1,7 @@
 module FuzzyTimings.TimeSlice (TimeSlice(..), 
                           tsDuration,
                           mkTimeSlice,
+                          mkPriorityTimeSlice,
                           overlaps,
                           addSecs,
                           inTimeSlice,
@@ -11,13 +12,13 @@ module FuzzyTimings.TimeSlice (TimeSlice(..),
 import Data.Time.LocalTime
 import Data.Time.Calendar
 import Data.Time.Clock
-import Data.Maybe
 import Data.List
 
 
 data TimeSlice a = TimeSlice {
     tsStart    :: LocalTime,
     tsEnd      :: LocalTime,
+    tsPriority :: Int,
     tsValue    :: a
 } deriving (Show)
 
@@ -52,11 +53,17 @@ mkTimeSlice :: LocalTime -> Int -> a -> TimeSlice a
 mkTimeSlice start duration value  = TimeSlice {
         tsStart = start,
         tsEnd = addSecs duration start,
+        tsPriority = 0,
         tsValue = value
     }
+mkPriorityTimeSlice :: LocalTime -> Int -> Int -> a -> TimeSlice a
+mkPriorityTimeSlice start duration priority value = (mkTimeSlice start duration value) {
+    tsPriority = priority
+        }
 
 inTimeSlice :: TimeSlice a -> LocalTime -> Bool
 inTimeSlice ts lt = lt >= tsStart ts && lt < tsEnd ts
+
 overlaps :: TimeSlice a -> TimeSlice b -> Bool
 overlaps t1 t2 
    | tsStart t1 == tsEnd t1 = False
@@ -73,14 +80,14 @@ intersectTimeSlice t1 t2
     | otherwise = Nothing
 
 deleteTimeSlice :: TimeSlice a -> TimeSlice b -> [TimeSlice a]
-deleteTimeSlice t1 t2 = deleteBy $ intersectTimeSlice t1 t2
+deleteTimeSlice t1 t2 = delBy $ intersectTimeSlice t1 t2
     where
-        deleteBy (Just t3) 
+        delBy (Just t3) 
             | tsStart t3 > tsStart t1 && tsEnd t3 < tsEnd t1 = 
                 [ t1 { tsEnd = tsStart t3 }, t1 { tsStart = tsEnd t3 } ]
             | tsStart t3 > tsStart t1 = [ t1 { tsEnd = tsStart t3 }]
             | otherwise = [ t1 { tsStart = tsEnd t3 } ]
-        deleteBy Nothing = [t1]
+        delBy Nothing = [t1]
         
 
 cutTimeSlice :: [LocalTime] -> TimeSlice a -> [TimeSlice a]

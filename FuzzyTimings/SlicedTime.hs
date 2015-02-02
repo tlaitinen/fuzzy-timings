@@ -62,7 +62,44 @@ flattenSlicedTime st = SlicedTime {
     }
     where
         flatten (t1:t2:tss) 
-            | overlaps t1 t2 = t1 { tsEnd = tsStart t2 } : flatten (t2:tss)
+            --          |----|
+            --            |----|
+            | tsStart t1 < tsStart t2 && tsStart t2 < tsEnd t1 
+                                      && tsEnd t2 > tsEnd t1 =
+                    if tsPriority t1 > tsPriority t2
+                        then t1 : flatten (t2 { tsStart = tsEnd t1 } : tss)
+                        else (t1 { tsEnd = tsStart t2 }) : flatten (t2:tss)
+            --          |----|
+            --            |--|                
+            | tsStart t1 < tsStart t2 && tsEnd t1 == tsEnd t2 =
+                    if tsPriority t1 > tsPriority t2
+                        then flatten (t1:tss)
+                        else flatten ((t1 { tsEnd = tsStart t2 }) : t2:tss)
+            --          |----|
+            --           |--|
+            | tsStart t1 < tsStart t2 && tsEnd t2 < tsEnd t1 =
+                    if tsPriority t1 > tsPriority t2
+                        then flatten (t1:tss)
+                        else flatten $ (t1 { tsEnd = tsStart t2}) 
+                                      : (t2:(t1 { tsStart=tsEnd t2 }):tss)
+            --          |----|
+            --          |-------|                    
+            | tsStart t1 == tsStart t2 && tsEnd t2 > tsEnd t1 =
+                    if tsPriority t1 > tsPriority t2
+                        then flatten (t1:t2 { tsStart = tsEnd t1 } : tss)
+                        else flatten (t2:tss)
+            --          |----|
+            --          |----|
+            | tsStart t1 == tsStart t2 && tsEnd t1 == tsEnd t2 = 
+                    if tsPriority t1 > tsPriority t2 
+                        then flatten (t1:tss)
+                        else flatten (t2:tss)
+            --          |----|
+            --          |---|
+            | tsStart t1 == tsStart t2 && tsEnd t1 > tsEnd t2 =
+                    if tsPriority t1 > tsPriority t2
+                        then flatten (t1:tss)
+                        else flatten (t2:(t1 { tsStart = tsEnd t2 }):tss)
             | otherwise = t1 : flatten (t2:tss)
         flatten tss = tss
 

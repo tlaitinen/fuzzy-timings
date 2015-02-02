@@ -1,5 +1,6 @@
 module FuzzyTimings.TimeOfDaySlice (TimeOfDaySlice(..),
                                mkTimeOfDaySlice,
+                               mkPriorityTimeOfDaySlice,
                                todsOverlaps) where
 
 import Data.Time.LocalTime
@@ -12,6 +13,7 @@ import Data.List
 data TimeOfDaySlice a = TimeOfDaySlice {
     todsStart  :: TimeOfDay,
     todsEnd    :: TimeOfDay,
+    todsPriority :: Int,
     todsValue    :: a
 } deriving (Show)
 
@@ -28,7 +30,12 @@ mkTimeOfDaySlice start duration value  = TimeOfDaySlice {
         todsStart = start,
         todsEnd   = dayFractionToTimeOfDay $ 
                         timeOfDayToDayFraction start + (fromIntegral duration / 86400),
+        todsPriority = 0,
         todsValue = value
+    }
+mkPriorityTimeOfDaySlice :: TimeOfDay -> Int -> Int -> a -> TimeOfDaySlice a
+mkPriorityTimeOfDaySlice start duration priority value = (mkTimeOfDaySlice start duration value) {
+        todsPriority = priority
     }
 
 
