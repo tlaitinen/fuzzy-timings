@@ -37,7 +37,8 @@ fromBoundaries bs d = SlicedTime {
     where slices (b1:b2:bs') = TimeSlice {
             tsStart = b1,
             tsEnd = b2,
-            tsValue = d
+            tsValue = d,
+            tsPriority = 0
                 }:slices (b2:bs')
           slices _ = []
 
